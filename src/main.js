@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
+import Vuelidate from 'vuelidate'
+
+// Pli\ugins
+Vue.use(Vuelidate)
 
 import './assets/scss/main.scss'
 
