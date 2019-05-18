@@ -1,7 +1,7 @@
 <template>
   <modal 
     title="Modal with form" 
-    @close="$emit('close')"
+    @close="modalClose"
   >
     <div slot="body">
       <form @submit.prevent="onSubmit">
@@ -29,6 +29,29 @@
           >
         </div>
 
+        <!-- Password -->
+        <div class="form-item" :class="{ errorInput: $v.password.$error }">
+          <label>Password:</label>
+          <p class="errorText" v-if="!$v.password.required">Password is required.</p>
+          <p class="errorText" v-if="!$v.password.minLength">Password must have at least {{ $v.password.$params.minLength.min }} letters.</p>
+          <input 
+            v-model='password'
+            :class='{error: $v.password.$error}'
+            @change='$v.password.$touch()'
+          >
+        </div>
+
+        <!-- PasswordRepeat -->
+        <div class="form-item" :class="{ errorInput: $v.repeatPassword.$error }">
+          <label>Repeat password:</label>
+          <p class="errorText" v-if="!$v.repeatPassword.sameAsPassword">Passwords must be identical.</p>
+          <input 
+            v-model='repeatPassword'
+            :class='{error: $v.repeatPassword.$error}'
+            @change='$v.repeatPassword.$touch()'
+          >
+        </div>
+
         <!-- Button -->
         <button class="btn btnPrimary">Summary</button>
       </form>
@@ -37,7 +60,7 @@
 </template>
 
 <script>
-import { required, minLength, email } from 'vuelidate/lib/validators'
+import { required, minLength, email, sameAs } from 'vuelidate/lib/validators'
 
 import modal from "@/components/UI/Modal.vue";
 export default {
@@ -45,7 +68,9 @@ export default {
   data () {
     return {
       name: '',
-      email: ''
+      email: '',
+      password: '',
+      repeatPassword: ''
     }
   },
   validations: {
@@ -56,6 +81,13 @@ export default {
     email: {
       required,
       email
+    },
+    password: {
+      required,
+      minLength: minLength(6)
+    },
+    repeatPassword: {
+      sameAsPassword: sameAs('password')
     }
   },
   methods: {
@@ -64,16 +96,27 @@ export default {
       if (!this.$v.$invalid) {
         const user = {
           name: this.name,
-          email: this.email
+          email: this.email,
+          password: this.password
         }
         console.log(user)
 
         // DONE
         this.name = ''
         this.email = ''
+        this.password = ''
+        this.repeatPassword = ''
         this.$v.$reset()
         this.$emit('close')
       }
+    },
+    modalClose () {
+      this.name = ''
+      this.email = ''
+      this.password = ''
+      this.repeatPassword = ''
+      this.$v.$reset()
+      this.$emit('close')
     }
   }
 };
