@@ -4,6 +4,8 @@
       <section>
         <div class="container">
 
+          <h1>Modals page</h1>
+
           <!-- first modal -->
           <button class="btn btnPrimary" @click='modalFirst = !modalFirst'>Show first modal</button>
           <modals 
