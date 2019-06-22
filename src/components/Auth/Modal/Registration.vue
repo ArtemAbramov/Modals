@@ -1,10 +1,11 @@
 <template>
   <modal 
-    title="Login" 
+    title="Registration" 
     @close="modalClose"
   >
     <div slot="body">
       <form @submit.prevent="onSubmit">
+
         <!-- Email -->
         <div class="form-item" :class="{ errorInput: $v.email.$error }">
           <label>Email:</label>
@@ -29,18 +30,29 @@
           >
         </div>
 
+        <!-- PasswordRepeat -->
+        <div class="form-item" :class="{ errorInput: $v.repeatPassword.$error }">
+          <label>Repeat password:</label>
+          <p class="errorText" v-if="!$v.repeatPassword.sameAsPassword">Passwords must be identical.</p>
+          <input 
+            v-model='repeatPassword'
+            :class='{error: $v.repeatPassword.$error}'
+            @change='$v.repeatPassword.$touch()'
+          >
+        </div>
+
         <!-- Button -->
-        <button class="btn btnPrimary">Summary</button>
+        <button class="btn btnPrimary">Summary</button> 
         <span 
-          class='toRegistration'
-          @click="modalClose(); $emit('toRegistration');">I need an account</span>
+          class='toLogin'
+          @click="modalClose(); $emit('toggleModal');">I have an account</span>
       </form>
     </div>
   </modal>
 </template>
 
 <script>
-import { required, minLength, email } from 'vuelidate/lib/validators'
+import { required, minLength, email, sameAs } from 'vuelidate/lib/validators'
 
 import modal from "@/components/UI/Modal.vue";
 export default {
@@ -48,17 +60,21 @@ export default {
   data () {
     return {
       email: '',
-      password: ''
+      password: '',
+      repeatPassword: ''
     }
   },
   validations: {
     email: {
       required,
-      minLength: minLength(4)
+      email
     },
     password: {
       required,
       minLength: minLength(6)
+    },
+    repeatPassword: {
+      sameAsPassword: sameAs('password')
     }
   },
   methods: {
@@ -74,6 +90,7 @@ export default {
         // DONE
         this.email = ''
         this.password = ''
+        this.repeatPassword = ''
         this.$v.$reset()
         this.$emit('close')
       }
@@ -81,6 +98,7 @@ export default {
     modalClose () {
       this.email = ''
       this.password = ''
+      this.repeatPassword = ''
       this.$v.$reset()
       this.$emit('close')
     }

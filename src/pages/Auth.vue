@@ -6,13 +6,13 @@
 
         <!-- Login -->
 
-        <button class="btn btnPrimary" @click='showLogin'>Login</button>
-        <login @toRegistration='showRegistration' @close='loginShow = false' v-show='loginShow' />
+        <button class="btn btnPrimary" @click='modalToggle("login")'>Login</button>
+        <login @toggleModal='modalToggle("registration")' @close='auth = null' v-show='auth === "login"' />
 
         <!-- Registration -->
 
-        <button class="btn btnPrimary" @click='showRegistration'>Registration</button>
-        <registration @toLogin='showLogin' @close='registrationShow = false' v-show='registrationShow' />
+        <button class="btn btnPrimary" @click='modalToggle("registration")'>Registration</button>
+        <registration @toggleModal='modalToggle("login")' @close='auth = null' v-show='auth === "registration"' />
 
       </div>
     </section>
@@ -20,22 +20,18 @@
 </template>
 
 <script>
-import login from '@/components/Login.vue'
-import registration from '@/components/Registration.vue'
+import login from '@/components/Auth/Modal/Login.vue'
+import registration from '@/components/Auth/Modal/Registration.vue'
 export default {
   components: { login, registration },
   data () {
     return {
-      loginShow: false,
-      registrationShow: false
+      auth: null
     }
   },
   methods: {
-    showLogin () {
-      this.loginShow = true
-    },
-    showRegistration () {
-      this.registrationShow = true
+    modalToggle (modal) {
+      this.auth = modal
     }
   }
 }
